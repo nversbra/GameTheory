@@ -1,5 +1,11 @@
 package gt;
-
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 	static int iterations = 1000;
@@ -35,25 +41,49 @@ public class Main {
 
 		double[] nfundaIniFractions = {0.1, 0.4, greedyNonFundInit}; //first values do not influence sim, but three values should add up to one
 		Population nfunda = new Population(nfundaIniFractions, greedyDemand, "non-fundamentalist");
-		
+
+        Writer writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream("filename.txt"), "utf-8"));
 
 
-		System.out.println("initial values");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("initial values");
 		funda.print();
 		nfunda.print();
 		System.out.println("____________");
 
 
-		for (int i = 0; i < iterations ; i++) {
+        for (int i = 0; i < iterations ; i++) {
 			funda.update(nfunda);
 			nfunda.update(funda);
-			if(i % 100 == 0){
-				System.out.println("timestep: " + (i+1));
-				funda.print();
-				nfunda.print();
+			//if(i % 100 == 0){
+            String out = "";
+            out = out + Integer.toString(i);
+            out += ",";
+            //out = out + funda.filePrint();
+            out = out + nfunda.filePrint();
+            out += ",";
+            out = out + funda.filePrint();
+            out += "\n";
+            funda.print();
+            nfunda.print();
+
+            try {
+                writer.write(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 				System.out.println("____________");
-			}
+			//}
 		}
+
+
 
 	}
 }

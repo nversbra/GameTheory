@@ -73,4 +73,9 @@ public class Population {
 	}
 
 
+	public String filePrint() {
+		String out= "";
+		out += fractions.get("modest") +", " + fractions.get("fair")+ ", " + fractions.get("greedy");
+		return  out;
+	}
 }
