@@ -52,6 +52,15 @@ public class Population {
 	double updateFraction(String fractionKey, Population otherPop){
 		return fractions.get(fractionKey) * expectedFitness(demands.get(fractionKey), otherPop) * (1./populationMeanFitness(otherPop));
 	}
+	
+	
+	Hashtable<String, Double> copyFractions(){
+		Hashtable<String,Double> copiedFractions = new Hashtable<String,Double>();
+		copiedFractions.put("greedy", fractions.get("greedy"));
+		copiedFractions.put("modest", fractions.get("modest"));
+		copiedFractions.put("fair", fractions.get("fair"));
+		return copiedFractions;	
+	}
 
 
 	void update(Population otherPop){
@@ -62,7 +71,6 @@ public class Population {
 			fractions.put(currentPlayer, updatedFraction);
 		}
 	}
-
 
 
 	void print(){
