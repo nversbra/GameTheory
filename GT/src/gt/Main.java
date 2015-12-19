@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class Main {
-	static int iterations = 10;
+	static int iterations = 40;
 
 	public static void main(String[] args) {
 
@@ -47,7 +47,8 @@ public class Main {
 
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("test.txt"), "utf-8"));
+					// filename : figure_initialFundamelistGreedyFraction_initialNonFundamentalistGreedyFraction.txt
+					new FileOutputStream("1d_sigmaG9_rhoG0.txt"), "utf-8"));
 
 
 		} catch (IOException e) {
@@ -71,8 +72,8 @@ public class Main {
 			out += ",";
 			out = out + funda.filePrint();
 			out += "\n";
-			funda.print();
-			nfunda.print();
+			//funda.print();
+			//nfunda.print();
 			
 			Hashtable<String, Double> saved_fractions = funda.copyFractions();
 			funda.update(nfunda);

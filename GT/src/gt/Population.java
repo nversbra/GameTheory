@@ -26,7 +26,7 @@ public class Population {
 
 		demands.put("modest",1-greedyDemand);
 		demands.put("fair", (double) 0.5);
-		demands.put("greedy",1-greedyDemand);
+		demands.put("greedy", greedyDemand);
 
 		type = popType;
 	}
@@ -61,6 +61,7 @@ public class Population {
 			String otherPlayer = players.nextElement();
 			tSum += calcPayoff(iDemand, pop.demands.get(otherPlayer)) * pop.fractions.get(otherPlayer);	
 		}
+		//System.out.println("Expected fitness for demand: " + iDemand + " against " + pop.type + " = " + tSum);
 		return tSum;
 	}
 
@@ -76,6 +77,8 @@ public class Population {
 		Enumeration<String> players = fractions.keys(); //[H] modest, fair, greedy
 		while(players.hasMoreElements()){
 			String currentPlayer = players.nextElement();
+			//System.out.println("Current player: " + currentPlayer);
+			//System.out.println(demands.get(currentPlayer));
 			tSum += fractions.get(currentPlayer) * expectedFitness(demands.get(currentPlayer), otherPop);
 		}
 		return tSum;
@@ -120,6 +123,17 @@ public class Population {
 			fractions.put(currentPlayer, updatedFraction);
 		}
 	}
+	
+	
+	/**
+	 * [H]
+	 * @param d
+	 * @return double rounded to 3 significant digits (to be used when displaying as a string, not during calculation itself)
+	 */
+	
+	double round(double d){
+		return Math.round(d * 1000) / 1000.0 ;
+	}
 
 
 	/**
@@ -139,7 +153,7 @@ public class Population {
 	*/
 	public String filePrint() {
 		String out= "";
-		out += fractions.get("modest") +", " + fractions.get("fair")+ ", " + fractions.get("greedy");
+		out += round(fractions.get("modest")) +", " + round(fractions.get("fair"))+ ", " + round(fractions.get("greedy"));
 		return  out;
 	}
 }
