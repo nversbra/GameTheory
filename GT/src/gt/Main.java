@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class Main {
-	static int iterations = 40;
+	static int iterations = 100;
 
 	public static void main(String[] args) {
 
@@ -32,23 +32,31 @@ public class Main {
 		 */
 
 
-		double greedyDemand = 0.9; 
-		double greedyFundInit = 0.9;
-		double greedyNonFundInit = 0;
-		double fairNonFundInit = 0.5;
+		double greedyDemand = 0.8; 
+		double greedyOrFalsiFundInit = 0.6; //greedy (normal game) or falsifiable (game with falsifiable players) initial fundamentalist fraction 
+		double greedyOrFalsiNonFundInit = 0.05;  //greedy (normal game) or falsifiable (game with falsifiable players) initial non-fundamentalist fraction 
+		double fairNonFundInit = 0.50;
 
-		double[] fundaIniFractions = {0, 1-greedyFundInit, greedyFundInit}; //! fair initial value = 0
-		Population funda = new Population(fundaIniFractions, greedyDemand, "fundamentalist");
-
-		double[] nfundaIniFractions = {1-(fairNonFundInit + greedyNonFundInit), fairNonFundInit , greedyNonFundInit}; //first values do not influence sim, but three values should add up to one
-		Population nfunda = new Population(nfundaIniFractions, greedyDemand, "non-fundamentalist");
+		double[] fundaIniFractions = {0, 1-greedyOrFalsiFundInit, greedyOrFalsiFundInit}; //! modest initial value = 0 for all fundamentalist populations (since there are no modest players)
+		Population funda = new Population("fundamentalist");
+		double[] nfundaIniFractions = {1-(fairNonFundInit + greedyOrFalsiNonFundInit), fairNonFundInit , greedyOrFalsiNonFundInit}; //first values do not influence sim, but three values should add up to one
+		Population nfunda = new Population("non-fundamentalist");
+		
+		
+		// first type of game (box 2)
+		//funda.normalSetup(fundaIniFractions, greedyDemand);
+		//nfunda.normalSetup(nfundaIniFractions, greedyDemand);
+		
+		//game with preference falsification (box 3)
+		funda.falsifiableSetup(fundaIniFractions, greedyDemand);
+		nfunda.falsifiableSetup(nfundaIniFractions, greedyDemand);
+		
 
 		Writer writer = null;
 
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(
-					// filename : figure_initialFundamelistGreedyFraction_initialNonFundamentalistGreedyFraction.txt
-					new FileOutputStream("1d_sigmaG9_rhoG0.txt"), "utf-8"));
+					new FileOutputStream("3c.txt"), "utf-8"));
 
 
 		} catch (IOException e) {
@@ -72,8 +80,9 @@ public class Main {
 			out += ",";
 			out = out + funda.filePrint();
 			out += "\n";
-			//funda.print();
-			//nfunda.print();
+			funda.print();
+			nfunda.print();
+			
 			
 			Hashtable<String, Double> saved_fractions = funda.copyFractions();
 			funda.update(nfunda);
@@ -81,6 +90,7 @@ public class Main {
 			funda.fractions = saved_fractions;
 			nfunda.update(funda);
 			funda.fractions = updated_fractions;
+			
 
 			try {
 				writer.write(out);
