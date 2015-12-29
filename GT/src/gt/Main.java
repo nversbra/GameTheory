@@ -28,12 +28,12 @@ public class Main {
 		 * - the greedy demand
 		 * - the initial greedy fundamentalist fraction (since there are only two fractions, the fair one is then also set)
 		 * - the initial greedy non-fundamentalist fraction 
-		 * (- the initial fair non-fundamelist fraction can be read from the plots of the paper)
+		 * (- the initial fair non-fundamentalist fraction can be read from the plots of the paper)
 		 */
 
 
-		double greedyDemand = 0.8; 
-		double greedyOrFalsiFundInit = 0.6; //greedy (normal game) or falsifiable (game with falsifiable players) initial fundamentalist fraction 
+		double greedyDemand = 0.6; 
+		double greedyOrFalsiFundInit = 0.60; //greedy (normal game) or falsifiable (game with falsifiable players) initial fundamentalist fraction 
 		double greedyOrFalsiNonFundInit = 0.05;  //greedy (normal game) or falsifiable (game with falsifiable players) initial non-fundamentalist fraction 
 		double fairNonFundInit = 0.50;
 
@@ -41,22 +41,23 @@ public class Main {
 		Population funda = new Population("fundamentalist");
 		double[] nfundaIniFractions = {1-(fairNonFundInit + greedyOrFalsiNonFundInit), fairNonFundInit , greedyOrFalsiNonFundInit}; //first values do not influence sim, but three values should add up to one
 		Population nfunda = new Population("non-fundamentalist");
-		
-		
+
+
 		// first type of game (box 2)
 		//funda.normalSetup(fundaIniFractions, greedyDemand);
 		//nfunda.normalSetup(nfundaIniFractions, greedyDemand);
-		
+
 		//game with preference falsification (box 3)
 		funda.falsifiableSetup(fundaIniFractions, greedyDemand);
 		nfunda.falsifiableSetup(nfundaIniFractions, greedyDemand);
-		
+
 
 		Writer writer = null;
 
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("3c.txt"), "utf-8"));
+					//new FileOutputStream("results_28_12/1d_rhoG0/1d_sigmaG9_rhoG0.txt"), "utf-8"));
+					new FileOutputStream("results_28_12/3b.txt"), "utf-8"));
 
 
 		} catch (IOException e) {
@@ -68,7 +69,7 @@ public class Main {
 		nfunda.print();
 		System.out.println("____________");
 
-		
+
 
 		for (int i = 0; i < iterations ; i++) {
 			//if(i % 100 == 0){
@@ -82,15 +83,16 @@ public class Main {
 			out += "\n";
 			funda.print();
 			nfunda.print();
-			
-			
-			Hashtable<String, Double> saved_fractions = funda.copyFractions();
-			funda.update(nfunda);
-			Hashtable<String,Double> updated_fractions = funda.copyFractions();
-			funda.fractions = saved_fractions;
+
+
+			nfunda.prepareUpdate(funda);
+			funda.prepareUpdate(nfunda);
 			nfunda.update(funda);
-			funda.fractions = updated_fractions;
+			funda.update(nfunda);
 			
+			
+
+
 
 			try {
 				writer.write(out);
@@ -109,7 +111,7 @@ public class Main {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		
+
 
 
 

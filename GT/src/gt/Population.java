@@ -9,6 +9,8 @@ public class Population {
 
 	Hashtable<String,Double> fractions = new Hashtable<String,Double>();
 	Hashtable<String,Double> demands = new Hashtable<String,Double>();
+	Hashtable<String, Double> expectedFitness = new Hashtable<String,Double>();
+	double popMeanFitness;
 
 	Population(String popType){
 		type = popType;
@@ -23,6 +25,13 @@ public class Population {
 		demands.put("modest",1-greedyDemand);
 		demands.put("fair", (double) 0.5);
 		demands.put("greedy", greedyDemand);
+		
+		expectedFitness.put("modest", 0.0);
+		expectedFitness.put("fair", 0.0);
+		expectedFitness.put("greedy", 0.0);
+		popMeanFitness = 0;
+		
+		
 	}
 
 	void falsifiableSetup(double[] initFractions, double greedyDemand){
@@ -34,6 +43,11 @@ public class Population {
 		demands.put("modest",1-greedyDemand);
 		demands.put("fair", (double) 0.5);
 		demands.put("falsifiable", greedyDemand);
+		
+		expectedFitness.put("modest", 0.0);
+		expectedFitness.put("fair", 0.0);
+		expectedFitness.put("falsifiable", 0.0);
+		popMeanFitness = 0;
 	}
 
 	/**
@@ -74,10 +88,11 @@ public class Population {
 	 */
 
 	double calcPayoff(String rowPlayer, String columnPlayer){
-
 		//box 3: extension for "falsifiable fundamentalism"
-		if (rowPlayer == "falsifiable" && columnPlayer == "falsifiable")
+		if (rowPlayer == "falsifiable" && columnPlayer == "falsifiable"){
 			return 0.5;
+		}
+			
 		if (rowPlayer == "falsifiable" && columnPlayer == "fair") //added for clarity, but this is actually superfluent (since x_G + x_F > 1)
 			return 0;
 
@@ -117,7 +132,7 @@ public class Population {
 	 *
 	 *	@return the mean population fitness represented as a double
 	 */
-	double populationMeanFitness(Population otherPop){
+	/*double populationMeanFitness(Population otherPop){
 		double tSum = 0;
 		Enumeration<String> players = fractions.keys(); //[H] modest, fair, greedy/falsifiable
 		while(players.hasMoreElements()){
@@ -126,8 +141,9 @@ public class Population {
 			//System.out.println(demands.get(currentPlayer));
 			tSum += fractions.get(currentPlayer) * expectedFitness(currentPlayer, otherPop);
 		}
+		System.out.println("population mean fitness ( " + type + ", " + otherPop.type + " ) = " + tSum);
 		return tSum;
-	}
+	}*/
 
 	/**
 	 *	Calculates the next proportion of individuals choosing the action corresponding to the given fractionKey in the population
@@ -138,15 +154,15 @@ public class Population {
 	 *
 	 *	@return the updated fraction p^(k+1)
 	 */
-	double updateFraction(String fractionKey, Population otherPop){
-		return fractions.get(fractionKey) * expectedFitness(fractionKey, otherPop) * (1./populationMeanFitness(otherPop));
+	double updateFraction(String fractionKey){
+		return fractions.get(fractionKey) * expectedFitness.get(fractionKey) * (1./popMeanFitness);
 	}
 
 
 	/**
 	 *	:)
 	 */
-	Hashtable<String, Double> copyFractions(){
+	/*Hashtable<String, Double> copyFractions(){
 		Hashtable<String,Double> copiedFractions = new Hashtable<String,Double>();
 		if (fractions.containsKey("greedy"))
 			copiedFractions.put("greedy", fractions.get("greedy"));
@@ -155,6 +171,24 @@ public class Population {
 		copiedFractions.put("modest", fractions.get("modest"));
 		copiedFractions.put("fair", fractions.get("fair"));
 		return copiedFractions;	
+	}*/
+	
+	/**
+	 * 
+	 */
+	
+	void prepareUpdate(Population otherPop){
+		Enumeration<String> players = expectedFitness.keys(); //[H] modest, fair, greedy/falsifiable
+		double meanFitnessSum = 0;
+		while(players.hasMoreElements()){
+			String currentPlayer = players.nextElement();
+			double expecFit = expectedFitness(currentPlayer, otherPop);
+			expectedFitness.put(currentPlayer, expecFit);
+			//System.out.println("expected fitness " + expecFit );
+			meanFitnessSum += fractions.get(currentPlayer) * expecFit;
+		}
+		popMeanFitness = meanFitnessSum;
+		//System.out.println("population mean fitness ( " + type + ", " + otherPop.type + " ) = " + popMeanFitness);
 	}
 
 
@@ -167,7 +201,7 @@ public class Population {
 		Enumeration<String> players = fractions.keys(); //[H] modest, fair, greedy/falsifiable
 		while(players.hasMoreElements()){
 			String currentPlayer = players.nextElement();
-			double updatedFraction = updateFraction(currentPlayer, otherPop);
+			double updatedFraction = updateFraction(currentPlayer);
 			fractions.put(currentPlayer, updatedFraction);
 		}
 	}
@@ -180,7 +214,7 @@ public class Population {
 	 */
 
 	double round(double d){
-		return Math.round(d * 10000) / 10000.0 ;
+		return Math.round(d * 10000.0) / 10000.0 ;
 	}
 
 
