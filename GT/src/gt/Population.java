@@ -51,18 +51,36 @@ public class Population {
 
 	}
 
-	/*
-	 * void falsifiableSetup(double[] initFractions, double greedyDemand){
-	 * 
-	 * fractions.put("modest",initFractions[0]); fractions.put("fair",initFractions[1]);
-	 * fractions.put("falsifiable",initFractions[2]);
-	 * 
-	 * demands.put("modest",1-greedyDemand); demands.put("fair", (double) 0.5); demands.put("falsifiable",
-	 * greedyDemand);
-	 * 
-	 * expectedFitness.put("modest", 0.0); expectedFitness.put("fair", 0.0); expectedFitness.put("falsifiable", 0.0);
-	 * popMeanFitness = 0; }
-	 */
+	void falsifiableSetup(double[] initFractions, double greedyDemand,
+			Hashtable<String, Hashtable<String, Double>> mutation_frequencies) {
+
+		fractions.put("petrified", initFractions[0]);
+		fractions.put("modest", initFractions[1]);
+		fractions.put("fair", initFractions[2]);
+		fractions.put("falsifiable", initFractions[3]);
+		fractions.put("terrorist", initFractions[4]);
+
+		demands.put("petrified", 0.0);
+		demands.put("modest", 1 - greedyDemand);
+		demands.put("fair", (double) 0.5);
+		demands.put("falsifiable", greedyDemand);
+		demands.put("terrorist", 1.0);
+
+		expectedFitness.put("petrified", 0.0);
+		expectedFitness.put("modest", 0.0);
+		expectedFitness.put("fair", 0.0);
+		expectedFitness.put("falsifiable", 0.0);
+		expectedFitness.put("terrorist", 0.0);
+		popMeanFitness = 0;
+
+		mutation_terms.put("petrified", 0.0);
+		mutation_terms.put("modest", 0.0);
+		mutation_terms.put("fair", 0.0);
+		mutation_terms.put("falsifiable", 0.0);
+		mutation_terms.put("terrorist", 0.0);
+
+		mut_freq = mutation_frequencies;
+	}
 
 	/**
 	 * Calculates the payoff of player type i in an interaction with another player type j. see box 2 & 3 in paper !
@@ -293,7 +311,8 @@ public class Population {
 					+ round(fractions.get("terrorist"));
 		if (fractions.containsKey("falsifiable"))
 			out += round(fractions.get("petrified")) + ", " + round(fractions.get("modest")) + ", "
-					+ round(fractions.get("fair")) + ", " + round(fractions.get("falsifiable"));
+					+ round(fractions.get("fair")) + ", " + round(fractions.get("falsifiable")) + ", "
+					+ round(fractions.get("terrorist"));
 		return out;
 	}
 }
